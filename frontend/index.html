@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Task Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .task-count {
+            font-size: 60px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        button {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .refresh-btn {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>DevOps Task Dashboard</h1>
+        <p>Docker Compose Multi-Container Application</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+
+            <h2>Total Tasks</h2>
+
+            <div class="task-count" id="taskCount">
+                0
+            </div>
+
+            <button class="add-btn" onclick="addTask()">
+                + Add Task
+            </button>
+
+            <button class="delete-btn" onclick="deleteTask()">
+                − Delete Task
+            </button>
+
+            <button class="refresh-btn" onclick="loadTasks()">
+                Refresh
+            </button>
+
+            <div class="status" id="status">
+                Connecting to backend...
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:5002";
+
+        async function loadTasks() {
+            try {
+                const response = await fetch(`${API}/tasks`);
+                const data = await response.json();
+
+                document.getElementById("taskCount").textContent = data.tasks;
+                document.getElementById("status").textContent =
+                    "Backend + Redis Connected ✓";
+
+            } catch (error) {
+                document.getElementById("status").textContent =
+                    "Backend connection failed";
+            }
+        }
+
+        async function addTask() {
+            try {
+                const response = await fetch(`${API}/add-task`);
+                const data = await response.json();
+
+                document.getElementById("taskCount").textContent = data.tasks;
+                document.getElementById("status").textContent =
+                    "Task added successfully ✓";
+
+            } catch (error) {
+                document.getElementById("status").textContent =
+                    "Failed to add task";
+            }
+        }
+
+        async function deleteTask() {
+            try {
+                const response = await fetch(`${API}/delete-task`);
+                const data = await response.json();
+
+                document.getElementById("taskCount").textContent = data.tasks;
+                document.getElementById("status").textContent =
+                    data.message;
+
+            } catch (error) {
+                document.getElementById("status").textContent =
+                    "Failed to delete task";
+            }
+        }
+
+        loadTasks();
+    </script>
+
+</body>
+</html>
